@@ -1,6 +1,5 @@
 package se331.lab.rest.dao;
 
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Repository;
 import se331.lab.rest.entity.Event;
 
@@ -88,8 +87,6 @@ public class EventDaoImpl implements EventDao {
                 .build());
     }
 
-
-
     @Override
     public Integer getEventSize() {
         return eventList.size();
@@ -99,24 +96,12 @@ public class EventDaoImpl implements EventDao {
     public List<Event> getEvents(Integer pageSize, Integer page) {
         pageSize = pageSize == null ? eventList.size() : pageSize;
         page = page == null ? 1 : page;
-        Integer firstIndex = (page - 1) * pageSize;
-        List<Event> output = new ArrayList<>();
-        HttpHeaders responseHeader = new HttpHeaders();
-        for (int i = firstIndex; i < firstIndex + pageSize; i++) {
-            output.add(eventList.get(i));
-        }
-        return output;
+        int firstIndex = (page-1) * pageSize;
+        return eventList.subList(firstIndex, firstIndex+pageSize);
     }
 
     @Override
     public Event getEvent(Long id) {
-        Event output = null;
-        for (Event event : eventList) {
-            if(event.getId().equals(id)) {
-                output = event;
-                break;
-            }
-        }
-        return output;
+        return eventList.stream().filter(event -> event.getId().equals(id)).findFirst().orElse(null);
     }
 }
